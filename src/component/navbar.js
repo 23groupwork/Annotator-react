@@ -2,13 +2,10 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link } from 'react-router-dom'
 
-function Navigation(props){
-  // const history = useHistory();
-  const isLoggedIn = props.isLoggedIn;
-  if(isLoggedIn){
+function Navigation({isLoggedIn=false}){
     return(
       <AppBar position="static">
-      <Toolbar>
+      <Toolbar>  
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Annatator
         </Typography>
@@ -16,33 +13,16 @@ function Navigation(props){
         <Button color="inherit">Contact us</Button>
         <Button component={Link} to="/login" color="inherit">Sign in</Button>
         <Button component={Link} to="/register" variant="oiutlined">Sign up</Button>
-        <UserGreeting/>
-      </Toolbar>
-    </AppBar>
-    );
-  }
-    return(
-      <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Annatator
-        </Typography>
-        <Button component={Link} to="/" color="inherit">Home</Button>
-        <Button color="inherit">Contact us</Button>
-        <Button component={Link} to="/login" color="inherit">Sign in</Button>
-        <Button component={Link} to="/register" variant="oiutlined">Sign up</Button>
-        <GuestGreeting/>
+        <Greeting isLoggedIn={isLoggedIn}/>
       </Toolbar>
     </AppBar>
     );
 }
 
-function UserGreeting(props) {
-  return <h3>Welcome back!</h3>;
-}
-
-function GuestGreeting(props) {
-  return <h3>Sign up, plz</h3>;
+function Greeting({isLoggedIn}){
+  return(
+    isLoggedIn ? <h3>Welcome back!</h3> : <h3>Sign in, plz</h3>
+  );
 }
 
 export default Navigation

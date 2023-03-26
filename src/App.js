@@ -5,10 +5,8 @@ import ChooseMajor from './view/ChooseMajor.js'
 import ChooseCourse from './view/ChooseCourse.js'
 import Mainpage from './view/Mainpage.js'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function App() {
-  // const location = useLocation();
 
   return (
     <BrowserRouter>

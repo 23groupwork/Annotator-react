@@ -5,7 +5,7 @@ function Home(){
     
     return(
         <div>
-            <Navbar isLoggedIn={true}/>
+            <Navbar isLoggedIn/>
             <Start className="learn-more" name="Quick Start" url="/choosemajor"/>
         </div>
     );

@@ -109,7 +109,7 @@ function SignIn() {
 export default function LoginPage() {
   return(
     <div>
-      <Navbar/>
+      <Navbar isLoggedIn={false}/>
       <SignIn/>
     </div>
   );
