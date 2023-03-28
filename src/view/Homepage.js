@@ -2,10 +2,9 @@ import Navbar from "../component/navbar.js"
 import Start from "../component/start.js"
 
 function Home(){
-    
     return(
         <div>
-            <Navbar isLoggedIn/>
+            <Navbar/>
             <Start className="learn-more" name="Quick Start" url="/choosemajor"/>
         </div>
     );

@@ -30,7 +30,10 @@ export default function Main() {
   const [openAlert, setOpenAlert] = useState(false);
 
   function handleCheckboxChange(value, checked) {
-    setSelectedCheckbox(prevState => ({ ...prevState, [value]: checked }));
+    setSelectedCheckbox(prevState => ({ 
+      ...prevState, 
+      [value]: checked 
+    }));
   };
 
   function handleStartClick() {

@@ -1,0 +1,6 @@
+.sideContainer{
+    display: flex;
+    flex-direction: row;
+    /*测试颜色*/
+    background-color: black;
+}

@@ -1,12 +1,11 @@
 import Sidebar from "../component/sidebar";
-// import Navbar from "../component/navbar";
+import Navbar from "../component/navbar";
 
 function main(){
     return(
         <div>
+        <Navbar/>
         <Sidebar/>
-        {/* <Navbar/> */}
-        1
         </div>
     );
 }

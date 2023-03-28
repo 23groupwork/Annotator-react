@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
 function Choice(props){
+    // const [choice, setChoice] = useState(false);
     return(
         <div className="choice" data-id={props.id} style={{display: 'flex', flexDirection: 'column',}}>
             <ChooseCard name={props.name} introduction={props.intro}/>
