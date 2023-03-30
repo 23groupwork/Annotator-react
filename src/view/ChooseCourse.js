@@ -5,6 +5,10 @@ import Alert from "../component/Alert.js";
 import { Box, Typography } from '@mui/material';
 import { CheckBox } from "../component/checkbox.js";
 import { ChooseCard } from "../component/card.js";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { addUser } from "../data/data";
+import  ChoiceData from "../data/coursedata.js"
 
 function Choice(props) {
   return (
@@ -27,30 +31,79 @@ function AskCourse() {
 
 export default function Main() {
   const [selectedCheckbox, setSelectedCheckbox] = useState({});
+  const [selectedCourse, setSelectedCourse] = useState({});
   const [openAlert, setOpenAlert] = useState(false);
+  const location = useLocation();
+  const Navigate = useNavigate();
+  const { id, userName, password, major } = location.state;
 
-  function handleCheckboxChange(value, checked) {
-    setSelectedCheckbox(prevState => ({ 
-      ...prevState, 
-      [value]: checked 
+  function handleCheckboxChange(value, checked, name, id) {
+    setSelectedCheckbox(prevState => ({
+      ...prevState,
+      [value]: checked
     }));
-  };
+  
+    if (checked) {
+      setSelectedCourse(prevState => ({
+        ...prevState,
+        [id]: name,
+      }));
+    } else {
+      setSelectedCourse(prevState => {
+        const newState = { ...prevState };
+        delete newState[id];
+        return newState;
+      });
+    }
+  }  
 
   function handleStartClick() {
     if (Object.values(selectedCheckbox).some(checked => checked)) {
-      return true;
+      const courses = selectedCourse;
+      //更换首字母avatar
+      let newUser;
+      if(id==="guest"){
+        newUser = {
+          id,
+          userName,
+          password,
+          major,
+          courses,
+          avatar: 'G',
+        }
+      } else {
+        const first = userName.charAt(0);
+        newUser = {
+          id,
+          userName,
+          password,
+          major,
+          courses,
+          avatar: {first},
+        }
+      }
+      
+      addUser(newUser);
+      Navigate("/mainpage", {state: {
+        newUser: {newUser}
+      }});
+      // return true;
     } else {
       setOpenAlert(true);
       return false;
     }
   };
 
-  const choiceData = [
-    { id: 1, value: 'check1', name: "comp201", intro: "Software Engineering" },
-    { id: 2, value: 'check2', name: "comp202", intro: "Algorithm" },
-    { id: 3, value: 'check3', name: "comp207", intro: "Database" },
-    { id: 4, value: 'check4', name: "comp208", intro: "Software Development" },
-  ];
+  let choiceData;
+  if(major==="Computer Science"){
+    choiceData = ChoiceData[0];
+  } else if(major==="Economics"){
+    choiceData = ChoiceData[1];
+  } else if(major==="Mathematic"){
+    choiceData = ChoiceData[3];
+  } else if(major==="Law"){
+    choiceData = ChoiceData[2];
+  }
 
   return (
     <div>
@@ -65,11 +118,11 @@ export default function Main() {
             value={choice.value}
             intro={choice.intro}
             checked={selectedCheckbox[choice.value] || false}
-            onChange={handleCheckboxChange}
+            onChange={(value, checked) => handleCheckboxChange(value, checked, choice.name, choice.id)}
           />
         ))}
       </div>
-      <Start className="learn-more" name="Start your exploration" url="/mainpage" onButtonClick={handleStartClick} />
+      <Start className="learn-more" name="Start your exploration" onButtonClick={handleStartClick} />
     </div>
   );
 }

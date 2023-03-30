@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -10,7 +9,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Navbar from '../component/navbar.js'
+import Navbar from '../component/navbar.js';
+import Start from '../component/start.js';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 function Copyright(props) {
   return (
@@ -22,19 +24,68 @@ function Copyright(props) {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
+
   );
 }
 
 const theme = createTheme();
 
 function SignUp() {
+  const [fNameError, setFNameError] = useState(false);
+  const [lNameError, setLNameError] = useState(false);
+  const [accountError, setAccountError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  const Navigate = useNavigate();
+
+  const buttonStyle = {
+    padding: "2em",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const firstname = data.get('firstName');
+    const lastname = data.get('lastName');
+    const account = data.get('account');
+    const password = data.get('password');
+    //先将基本信息压进数据库，再进行专业和课程选择
+    if(!firstname){
+      setFNameError(true);
+    } else {
+      setFNameError(false);
+    }
+
+    if(!lastname){
+      setLNameError(true);
+    } else {
+      setLNameError(false);
+    }
+
+    if (!account) {
+      setAccountError(true);
+    } else {
+      setAccountError(false);
+    }
+
+    if (!password) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+
+    if (firstname && lastname && account && password) {
+      console.log({ firstname, lastname, account, password });
+      // 处理成功后，跳转到选择专业页面
+      const userName = account;
+      Navigate("/choosemajor", {
+        state: {id: 5, userName, password},
+      });
+    }
   };
 
   return (
@@ -59,6 +110,7 @@ function SignUp() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  error={fNameError}
                   autoComplete="given-name"
                   name="firstName"
                   required
@@ -70,6 +122,7 @@ function SignUp() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  error={lNameError}
                   required
                   fullWidth
                   id="lastName"
@@ -80,16 +133,18 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={accountError}
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id="account"
+                  label="Account"
+                  name="account"
+                  autoComplete="account"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={passwordError}
                   required
                   fullWidth
                   name="password"
@@ -100,21 +155,16 @@ function SignUp() {
                 />
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link href="/" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
             </Grid>
+            <div style={buttonStyle}>
+            <Start className="learn-more" name="sign up" onSubmit={handleSubmit}/>
+            </div>
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />

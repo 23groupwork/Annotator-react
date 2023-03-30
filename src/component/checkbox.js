@@ -6,7 +6,7 @@ export function CheckBox(props){
     const handleChange = (event) => {
         const value = event.target.value;
         if(props.mode==="single"){
-            props.onChange(value);
+            props.onChange(event);
         } else if(props.mode==="multiple"){
             const { checked } = event.target;
             props.onChange(props.value, checked);

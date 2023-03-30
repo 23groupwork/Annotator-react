@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -12,8 +11,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Navbar from '../component/navbar.js'
-// import Logo from "../assets/logoA.png"
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Start from "../component/start.js"
+import { CurrentUser } from "../data/data.js"
 
 function Copyright(props) {
   return (
@@ -31,13 +32,48 @@ function Copyright(props) {
 const theme = createTheme();
 
 function SignIn() {
+  const Navigate = useNavigate();
+  const [accountError, setAccountError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const buttonStyle = {
+    padding: "2em",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const account = data.get('account');
+    const password = data.get('password');
+    //判断输入框是否为空
+    if (!account) {
+      setAccountError(true);
+    } else {
+      setAccountError(false);
+    }
+
+    if (!password) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+    if (account && password) {
+      console.log({ account, password });
+
+      const user = CurrentUser.find((user) => user.userName === account && user.password === password);
+      // console.log(user);
+      // 处理成功后，跳转到用户对应的主页面
+      if(user){
+        Navigate("/Mainpage", {
+          state: {user: {user}},
+        });
+      } else {
+        alert("Invalid username and password");
+      }
+    }
   };
 
   return (
@@ -60,16 +96,17 @@ function SignIn() {
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
+              error={accountError}
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="account"
+              label="Account"
+              name="account"
               autoFocus
             />
             <TextField
+              error={passwordError}
               margin="normal"
               required
               fullWidth
@@ -83,14 +120,6 @@ function SignIn() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
             <Grid container>
               <Grid item>
                 <Link href="/register" variant="body2">
@@ -98,6 +127,10 @@ function SignIn() {
                 </Link>
               </Grid>
             </Grid>
+            <div style={buttonStyle}>
+            <Start className="learn-more" name="Sign In" onSubmit={handleSubmit}/>
+            <Start className="learn-more" name="Quick Start" url="/choosemajor"/>
+            </div>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
@@ -109,7 +142,6 @@ function SignIn() {
 export default function LoginPage() {
   return(
     <div>
-      <Navbar isLoggedIn={false}/>
       <SignIn/>
     </div>
   );

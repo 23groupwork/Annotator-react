@@ -11,7 +11,6 @@ function QuickStart(props){
         if (props.onButtonClick) {
             shouldNavigate = props.onButtonClick();
         }
-
         if (shouldNavigate) {
             Navigate(props.url);
         }
