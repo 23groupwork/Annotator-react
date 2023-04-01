@@ -71,7 +71,9 @@ function SignIn() {
           state: {user: {user}},
         });
       } else {
-        alert("Invalid username and password");
+        setAccountError(!user);
+        setPasswordError(!user);
+        // alert("Invalid username and password");
       }
     }
   };

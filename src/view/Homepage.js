@@ -1,5 +1,4 @@
 import Navbar from "../component/navbar.js"
-// import Start from "../component/start.js"
 import Login from "./Login.js"
 // import { useNavigate } from "react-router-dom"
 

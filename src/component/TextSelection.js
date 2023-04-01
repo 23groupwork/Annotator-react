@@ -33,11 +33,11 @@ function TextSelection({id}) {
   function handleCommentSubmit(e) {
     e.preventDefault();
     const comment = { 
-      id: CurrentUser[id].id,
+      id: CurrentUser[id-1].id,
       text: newComment, 
       replies: [], 
-      username: CurrentUser[id].userName, 
-      avatar: CurrentUser[id].avatar,
+      username: CurrentUser[id-1].userName, 
+      avatar: CurrentUser[id-1].avatar,
     };
     console.log(comment);
     setComments([...comments, comment]);

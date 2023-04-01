@@ -1,7 +1,42 @@
 import Sidebar from "../component/sidebar";
 import Navbar from "../component/navbar";
-import TextSelection from "../component/TextSelection";
+// import TextSelection from "../component/TextSelection";
+import ChoiceData from "../data/coursedata";
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
+
+function findLectures(major, selectedCourse) {
+    let courses;
+    if (major === "Computer Science") courses = Object.values(ChoiceData)[0];
+    if (major === "Economics") courses = Object.values(ChoiceData)[1];
+    if (major === "Law") courses = Object.values(ChoiceData)[2];
+    if (major === "Mathematics") courses = Object.values(ChoiceData)[3];
+  
+    let foundLectures = [];
+  
+    courses.forEach(({ name, lecture }) => {
+      if (selectedCourse === name) {
+        foundLectures = lecture;
+      }
+    });
+  
+    return foundLectures;
+  }
+
+function LecturesList({selectedCourse, major}){
+    const lectures = findLectures(major, selectedCourse);
+     
+    return(
+        <div>
+        <h1>{selectedCourse}</h1>
+        <ul>
+            {lectures.map((lecture, index)=>
+            <li key={index}>{lecture}</li>
+            )}
+        </ul>
+        </div>
+    );
+}
 
 function Mainpage(){
     const container = {
@@ -31,17 +66,20 @@ function Mainpage(){
         left: "3rem",
     };
 
+    const [selectedCourse, setSelectedCourse] = useState(null);
+
     const location = useLocation();
     const newUser = location.state;
-    // console.log(newUser);
-    const id=Object.values(newUser)[0]
-    console.log(id)
+    const currentuser=Object.values(Object.values(newUser)[0])[0];
+    // const id = Object.values(currentuser)[0];
+    const name = Object.values(currentuser)[1];
+    const major = Object.values(currentuser)[3];
     
     return(
         <div style={container}>
-        <Navbar/>
+        <Navbar isLoggedIn="true" name={name}/>
         <div style={sideTitle}>
-            <Sidebar newUser={newUser}/>
+            <Sidebar newUser={newUser} onCourseClick={setSelectedCourse}/>
             <div style={titleContent}>
                 <div style={titleStyle}>
                     <span style={spanStyle}>Modules selection</span>
@@ -49,7 +87,8 @@ function Mainpage(){
                 {/* <div className="content">
                     this is a main content
                 </div> */}
-                <TextSelection id={id}/>
+                {/* <TextSelection id={id}/> */}
+                <LecturesList selectedCourse={selectedCourse} major={major}/>
             </div>
         </div>
         </div>
