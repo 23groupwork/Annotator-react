@@ -6,6 +6,7 @@ function Navigation({isLoggedIn=false, name}){
     const titleStyle = {
       textDecoration: "none",
       color: "white",
+      fontWeight: "bolder",
     };
 
     const isGuest = name==="guest";

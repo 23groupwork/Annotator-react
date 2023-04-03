@@ -60,6 +60,7 @@ export default function Main() {
   function handleStartClick() {
     if (Object.values(selectedCheckbox).some(checked => checked)) {
       const courses = selectedCourse;
+      console.log(courses)
       //更换首字母avatar
       let newUser;
       if(id==="guest"){
@@ -84,9 +85,9 @@ export default function Main() {
       }
       
       addUser(newUser);
-      Navigate("/mainpage", {state: {
-        newUser: {newUser}
-      }});
+      Navigate("/mainpage", {
+        state: {newUser},
+      });
       // return true;
     } else {
       setOpenAlert(true);

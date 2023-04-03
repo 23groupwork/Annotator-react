@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
-import CurrentUser from "../data/data.js";
+// import CurrentUser from "../data/data.js";
 import Avatar from "@mui/material/Avatar";
 import "../layouts/textselection.css";
 
-function TextSelection({id}) {
+function TextSelection({currentUser, title, content}) {
   const [selectedText, setSelectedText] = useState("");
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comments, setComments] = useState([]);
@@ -32,12 +32,16 @@ function TextSelection({id}) {
 
   function handleCommentSubmit(e) {
     e.preventDefault();
+    if(currentUser.id==="guest"){
+      alert("Register, plz")
+      return;
+    }
     const comment = { 
-      id: CurrentUser[id-1].id,
+      id: currentUser.id,
       text: newComment, 
       replies: [], 
-      username: CurrentUser[id-1].userName, 
-      avatar: CurrentUser[id-1].avatar,
+      username: currentUser.userName, 
+      avatar: Object.values(currentUser.avatar),
     };
     console.log(comment);
     setComments([...comments, comment]);
@@ -65,16 +69,17 @@ function TextSelection({id}) {
   return (
     <div ref={containerRef} className="text-container" onMouseUp={handleMouseUp} style={{display: "flex", alignItems: "flex-start"}}>
       {/* 在这里插入要处理的文本内容 */}
+      {title}
       <p>
-        Your text goes here. Users can select and translate the text on this
-        page.
+        {content}
+        Your text goes here. Users can select and translate the text on this page.
       </p>
       {showCommentBox && (
         <div className="comment-box" style={{display: "flex", flexDirection:"column"}}>
           <button onClick={toggleComments}>
             {showCommentBox ? "Hide Comments" : "Show Comments"}
           </button>
-          <h4>Comments:</h4>
+          <h4>{title} Comments:</h4>
           <ul>
             {comments.map((comment) => (
               <li key={comment.id}>

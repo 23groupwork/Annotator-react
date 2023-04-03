@@ -61,14 +61,12 @@ function SignIn() {
       setPasswordError(false);
     }
     if (account && password) {
-      console.log({ account, password });
-
+      // console.log({ account, password });
       const user = CurrentUser.find((user) => user.userName === account && user.password === password);
-      // console.log(user);
       // 处理成功后，跳转到用户对应的主页面
       if(user){
         Navigate("/Mainpage", {
-          state: {user: {user}},
+          state: {user},
         });
       } else {
         setAccountError(!user);
