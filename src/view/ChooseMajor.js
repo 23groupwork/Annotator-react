@@ -34,7 +34,7 @@ export default function Main({majorData}){
 
     const Location = useLocation();
     // const { id, userName, password } = Location.state;
-    const { id = "guest", userName = "guest", password = "guest" } = Location.state || {};
+    const { id = "guest", userName = "guest", password = "guest", roleType = "student" } = Location.state || {};
     const Navigate = useNavigate();
 
     function handleCheckboxChange(event) {
@@ -51,7 +51,7 @@ export default function Main({majorData}){
         } else {
             const major = selectedMajor;
             Navigate("/choosecourse", {
-                state: { id, userName, password, major },
+                state: { id, userName, password, major, roleType },
             })
             // return true;
         }

@@ -35,7 +35,7 @@ export default function Main() {
   const [openAlert, setOpenAlert] = useState(false);
   const location = useLocation();
   const Navigate = useNavigate();
-  const { id, userName, password, major } = location.state;
+  const { id, userName, password, major, roleType } = location.state;
 
   function handleCheckboxChange(value, checked, name, id) {
     setSelectedCheckbox(prevState => ({
@@ -71,6 +71,7 @@ export default function Main() {
           major,
           courses,
           avatar: 'G',
+          roleType,
         }
       } else {
         const first = userName.charAt(0);
@@ -81,6 +82,7 @@ export default function Main() {
           major,
           courses,
           avatar: {first},
+          roleType,
         }
       }
       

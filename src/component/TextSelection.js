@@ -4,6 +4,7 @@ import Avatar from "@mui/material/Avatar";
 import "../layouts/textselection.css";
 
 function TextSelection({currentUser, title, content}) {
+  const [showToolBar, setShowToolBar] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comments, setComments] = useState([]);
@@ -21,7 +22,8 @@ function TextSelection({currentUser, title, content}) {
     setSelectedText(selected);
 
     if (selected) {
-      setShowCommentBox(true);
+      // setShowCommentBox(true);
+      setShowToolBar(true);
     } else {
       if (document.activeElement.tagName !== "TEXTAREA" &&
       !containerRef.current.contains(e.target)) {
@@ -29,6 +31,11 @@ function TextSelection({currentUser, title, content}) {
       }
     }
   }
+
+  const onCommentClick = () => {
+    setShowToolBar(false);
+    setShowCommentBox(true);
+  };
 
   function handleCommentSubmit(e) {
     e.preventDefault();
@@ -74,6 +81,14 @@ function TextSelection({currentUser, title, content}) {
         {content}
         Your text goes here. Users can select and translate the text on this page.
       </p>
+      {/* 添加工具栏 */}
+      {showToolBar && (
+        <div className="toolbar" style={{ display: "flex", flexDirection: "row"}}>
+          <button onClick={onCommentClick}>Comment</button>
+          |
+          <button>Highlight</button>
+        </div>
+      )}
       {showCommentBox && (
         <div className="comment-box" style={{display: "flex", flexDirection:"column"}}>
           <button onClick={toggleComments}>

@@ -6,6 +6,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"}, 
         avatar: 'C',
+        roleType: 'student',
     },
     {
         id: 2,
@@ -14,6 +15,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'Z',
+        roleType: "student",
     },
     {
         id: 3,
@@ -22,6 +24,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'R',
+        roleType: 'student',
     },
     {
         id: 4,
@@ -30,6 +33,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'X',
+        roleType: 'student',
     }
 ];
 

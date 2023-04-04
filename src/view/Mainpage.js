@@ -86,13 +86,11 @@ function Mainpage(){
 
     const location = useLocation();
     const newUser = location.state;
-    console.log(newUser)
     const currentuser=Object.values(newUser);
     // const id = Object.values(currentuser)[0];
     const name = currentuser[0].userName;
-    // console.log(currentuser[0])
     const major = currentuser[0].major;
-
+    
     return(
         <div style={container}>
         <Navbar isLoggedIn="true" name={name}/>

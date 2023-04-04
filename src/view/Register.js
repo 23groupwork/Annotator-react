@@ -13,6 +13,11 @@ import Navbar from '../component/navbar.js';
 import Start from '../component/start.js';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 function Copyright(props) {
   return (
@@ -35,6 +40,8 @@ function SignUp() {
   const [lNameError, setLNameError] = useState(false);
   const [accountError, setAccountError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [typeError, setTypeError] = useState(false)
+  const [selectedRole, setSelectedRole] = useState("");
 
   const Navigate = useNavigate();
 
@@ -78,12 +85,19 @@ function SignUp() {
       setPasswordError(false);
     }
 
-    if (firstname && lastname && account && password) {
-      console.log({ firstname, lastname, account, password });
+    if (!selectedRole) {
+      setTypeError(true);
+    } else {
+      setTypeError(false);
+    }
+
+    if (firstname && lastname && account && password && selectedRole) {
+      console.log({ firstname, lastname, account, password, selectedRole });
       // 处理成功后，跳转到选择专业页面
+      const roleType = selectedRole;
       const userName = account;
       Navigate("/choosemajor", {
-        state: {id: 5, userName, password},
+        state: {id: 5, userName, password, roleType},
       });
     }
   };
@@ -155,6 +169,24 @@ function SignUp() {
                 />
               </Grid>
             </Grid>
+            <br/>
+            <FormControl>
+              <FormLabel id="demo-row-radio-buttons-group-label">I am a ...</FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+                value={selectedRole}
+                onChange={(event) => setSelectedRole(event.target.value)}>
+                <FormControlLabel value="tutor" control={<Radio />} label="Tutor" />
+                <FormControlLabel value="Student" control={<Radio />} label="Student" />
+              </RadioGroup>
+              {typeError && (
+            <Typography variant="caption" color="error">
+              Please select a role.
+            </Typography>
+            )}
+            </FormControl>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/" variant="body2">
