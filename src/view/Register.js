@@ -18,6 +18,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Loading from '../component/Loading.js';
 
 function Copyright(props) {
   return (
@@ -42,6 +43,7 @@ function SignUp() {
   const [passwordError, setPasswordError] = useState(false);
   const [typeError, setTypeError] = useState(false)
   const [selectedRole, setSelectedRole] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const Navigate = useNavigate();
 
@@ -96,14 +98,20 @@ function SignUp() {
       // 处理成功后，跳转到选择专业页面
       const roleType = selectedRole;
       const userName = account;
-      Navigate("/choosemajor", {
-        state: {id: 5, userName, password, roleType},
-      });
+      //延迟加载
+      setIsLoading(true);
+      setTimeout(()=>{
+        Navigate("/choosemajor", {
+          state: {id: 5, userName, password, roleType},
+        });
+        setIsLoading(false);
+      }, 3000)
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
+      {isLoading && <Loading />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box

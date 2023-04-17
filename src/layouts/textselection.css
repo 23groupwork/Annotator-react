@@ -7,7 +7,8 @@
   }
   
   .toolbar button {
-    background-color: pink;
+    background-color: rgb(0, 174, 255);
+    color: white;
   }
 
   .comment-box {

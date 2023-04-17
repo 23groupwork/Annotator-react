@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { addUser } from "../data/data";
 import  ChoiceData from "../data/coursedata.js"
+import Loading from '../component/Loading.js';
 
 function Choice(props) {
   return (
@@ -22,7 +23,7 @@ function Choice(props) {
 function AskCourse() {
   return (
     <Box sx={{ backgroundColor: '#f0f0f0', padding: 2 }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" gutterBottom style={{textAlign:"center"}}>
         What you are interested in?
       </Typography>
     </Box>
@@ -33,6 +34,7 @@ export default function Main() {
   const [selectedCheckbox, setSelectedCheckbox] = useState({});
   const [selectedCourse, setSelectedCourse] = useState({});
   const [openAlert, setOpenAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const Navigate = useNavigate();
   const { id, userName, password, major, roleType } = location.state;
@@ -87,9 +89,13 @@ export default function Main() {
       }
       
       addUser(newUser);
-      Navigate("/mainpage", {
-        state: {newUser},
-      });
+      setIsLoading(true);
+      setTimeout(()=>{
+        Navigate("/mainpage", {
+          state: {newUser},
+        });
+        setIsLoading(false);
+      }, 2000)
       // return true;
     } else {
       setOpenAlert(true);
@@ -110,6 +116,7 @@ export default function Main() {
 
   return (
     <div>
+      {isLoading && <Loading/>}
       <Navbar />
       <AskCourse />
       <Alert name="courses" open={openAlert} />
@@ -125,7 +132,9 @@ export default function Main() {
           />
         ))}
       </div>
-      <Start className="learn-more" name="Start your exploration" onButtonClick={handleStartClick} />
+      <div style={{margin:"4em"}}>
+        <Start className="learn-more" name="Start your exploration" onButtonClick={handleStartClick} />
+      </div>
     </div>
   );
 }

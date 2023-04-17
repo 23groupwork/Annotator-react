@@ -19,7 +19,10 @@ function PersonInfo({roleType}){
   const handleClick = () => {
     setOpen(!open);
   };
-  if(roleType==="student"){
+  const handleMessageClick = () => {
+    
+  };
+  if(roleType==="Student"){
   return(
     <List
     sx={{ width: '100%', maxWidth: 360, bgcolor: 'whitesmoke' }}
@@ -31,7 +34,7 @@ function PersonInfo({roleType}){
     </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItemButton sx={{pl:4}}>
+          <ListItemButton sx={{pl:4}} onClick={handleMessageClick}>
             <NotificationsActiveIcon fontSize='small'/>
             <ListItemText primary="Message" style={{textAlign: 'center'}}/>
           </ListItemButton>

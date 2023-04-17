@@ -26,7 +26,6 @@ function findLectures(major, selectedCourse) {
 function LecturesList({currentUser, selectedCourse, major}){
     const [selectedLecture, setSelectedLecture] = useState(null);
     const lectures = findLectures(major, selectedCourse);
-    console.log(selectedLecture)
     const onLectureClick = (e, lecture) => {
         e.preventDefault();
         setSelectedLecture(lecture);
@@ -36,7 +35,7 @@ function LecturesList({currentUser, selectedCourse, major}){
         height: "4rem",
         fontWeight: "bolder",
         fontSize: "larger",
-        backgroundColor: "pink",
+        backgroundColor: "whitesmoke",
     };
     const spanStyle = {
         position: "relative",
@@ -55,12 +54,13 @@ function LecturesList({currentUser, selectedCourse, major}){
                 <button className="lecture-link" onClick={(e) => onLectureClick(e, lecture)}> 
                 {lecture.title}
                 </button>
+                {lecture.summary}
             </li>
             )}
         </ul>
         {selectedLecture && (
         <div>
-          <TextSelection currentUser={currentUser} title={selectedLecture.title} content={selectedLecture.content}/>
+          <TextSelection currentUser={currentUser} title={selectedLecture.title} content={selectedLecture.content} summary={selectedLecture.summary}/>
         </div>)}
         </div>
     );

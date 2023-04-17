@@ -6,6 +6,7 @@ import { ChooseCard } from "../component/card.js";
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate, useLocation} from 'react-router-dom';
+import Loading from "../component/Loading.js";
 
 function Choice(props){
     return(
@@ -19,7 +20,7 @@ function Choice(props){
 function AskMajor(){
     return(
         <Box sx={{ backgroundColor: '#f0f0f0', padding: 2 }}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom style={{textAlign:"center"}}>
           What's your major?
         </Typography>
       </Box>
@@ -31,6 +32,7 @@ export default function Main({majorData}){
     const [selectedCheckbox, setSelectedCheckbox] = useState('');
     const [openAlert, setOpenAlert] = useState(false);
     const [selectedMajor, setSelectedMajor] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const Location = useLocation();
     // const { id, userName, password } = Location.state;
@@ -50,9 +52,13 @@ export default function Main({majorData}){
             return false;
         } else {
             const major = selectedMajor;
-            Navigate("/choosecourse", {
-                state: { id, userName, password, major, roleType },
-            })
+            setIsLoading(true)
+            setTimeout(()=>{
+                Navigate("/choosecourse", {
+                    state: { id, userName, password, major, roleType },
+                });
+                setIsLoading(false);
+            }, 2000)
             // return true;
         }
     };
@@ -61,6 +67,7 @@ export default function Main({majorData}){
 
     return(
         <div>
+            {isLoading && <Loading/>}
             <Navbar/>
             <AskMajor/>
             <SnackAlert name="major" open={openAlert}/>
@@ -76,7 +83,7 @@ export default function Main({majorData}){
                     />
                 ))}
             </div>
-            <div>
+            <div style={{margin:"4em"}}>
             <Start className="learn-more" name="Confirm it!" onButtonClick={handleStartClick}/> 
             </div>
         </div>

@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Start from "../component/start.js"
 import { CurrentUser } from "../data/data.js"
+import Loading from '../component/Loading.js';
 
 function Copyright(props) {
   return (
@@ -35,6 +36,7 @@ function SignIn() {
   const Navigate = useNavigate();
   const [accountError, setAccountError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const buttonStyle = {
     padding: "2em",
     display: "flex",
@@ -65,9 +67,14 @@ function SignIn() {
       const user = CurrentUser.find((user) => user.userName === account && user.password === password);
       // 处理成功后，跳转到用户对应的主页面
       if(user){
-        Navigate("/Mainpage", {
-          state: {user},
-        });
+        //设置延迟加载动画
+        setIsLoading(true);
+        setTimeout(()=>{
+          Navigate("/Mainpage", {
+            state: {user},
+          });
+          setIsLoading(false);
+        }, 3000)
       } else {
         setAccountError(!user);
         setPasswordError(!user);
@@ -78,6 +85,7 @@ function SignIn() {
 
   return (
     <ThemeProvider theme={theme}>
+      {isLoading && <Loading />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
