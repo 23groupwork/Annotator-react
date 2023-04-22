@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import Avatar from "@mui/material/Avatar";
+import Button from '@mui/material/Button';
 import "../layouts/textselection.css";
-import CommentData from "../data/commentData";
+import { useEffect } from "react";
 
 function Toolbar({onCommentClick, onCommentHighlight, toolbarRef}){
   return(
@@ -18,131 +19,141 @@ function Toolbar({onCommentClick, onCommentHighlight, toolbarRef}){
 
 function Commentbox({boxKey, currentUser, title, newComment, setNewComment,toggleComments, showCommentBox}){
   const [comments, setComments] = useState([]);
-  const [replyText, setReplyText] = useState("");
+  const [replyText, setReplyText] = useState([]);
+  const [newReplyText, setNewReplyText] =useState("");
   const [replyTo, setReplyTo] = useState(null);
-
+  const [shownReplies, setShownReplies] = useState({});
+  // setComments(commentData);
   // console.log(Object.values(CommentData[boxKey-1])[0])
+  useEffect(() => {
+    async function fetchComments() {
+      try {
+        const response = await axios.post(`http://35.178.198.96:3000/api/users/getComment?content_id=${boxKey}`);
+        setComments(response.data.comments);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    }
+  
+    fetchComments();
+  }, [boxKey]);
+
   async function handleCommentSubmit(e) {
     e.preventDefault();
-    if(currentUser.id==="guest"){
+    if(currentUser.userName==="guest"){
       alert("Register, plz")
       return;
     }
-    const uniqueId = Date.now();
+    
     const comment = { 
-      id: uniqueId,
-      text: newComment, 
-      replies: [], 
-      username: currentUser.userName, 
-      avatar: Object.values(currentUser.avatar),
+      comment_detail: newComment,
+      comment_user_name: currentUser.userName,
+      content_id: boxKey,
     };
 
-    // console.log(comment);
-    // setComments([...comments, comment]);
-    // setNewComment("");
-    const updatedComments = { ...comments, [boxKey]: [...(comments[boxKey] || []), comment] };
-    setComments(updatedComments);
-    setNewComment("");
-    // try{
-    //   const response = await axios.post("http://localhost:8088/submitComment", comment);
-    //   const savedComment = response.data;
-    //   setComments([...comments, savedComment]);
-    //   setNewComment("");
-    // } catch(error){
-    //   console.error("Error submitting comment:", error);
-    // }
+    console.log(comment)
+    try{
+      const response = await axios.post("http://35.178.198.96:3000/api/users/writeComment", comment);
+      if(response.data.message==="Data has been successfully written"){
+        const getCommentResponse = await axios.post(`http://35.178.198.96:3000/api/users/getComment?content_id=${boxKey}`);
+        console.log(getCommentResponse.data.comments)
+        setComments(getCommentResponse.data.comments);
+        setNewComment("");
+      }
+    } catch(error) {
+      console.error("Error submitting comment:", error);
+    }
   }
 
   function handleReplyClick(commentId) {
-    setReplyTo(commentId);
+    // setReplyTo(commentId);
+    setReplyTo(replyTo === commentId ? null : commentId);
   }
 
-  async function handleReplySubmit(e) {
+  async function handleGetReply(commentId){
+    try{
+      const response = await axios.post(`http://35.178.198.96:3000/api/users/getReply?comment_id=${commentId}`);
+      console.log(response.data)
+      setReplyText(response.data.replies);
+      // setShowReply(!showReply);
+      setShownReplies((prevShownReplies) => ({
+        ...prevShownReplies,
+        [commentId]: !prevShownReplies[commentId],
+      }));
+    } catch(error) {
+      console.error(error.response.data)
+      alert(error.response.data.error)
+    }
+  }
+
+  async function handleReplySubmit(e, comment_id) {
     e.preventDefault();
-    // const updatedComments = comments.map((comment) => {
-      // if (comment.id === replyTo) {
-      //   return { ...comment, replies: [...comment.replies, replyText] };
-      // } else {
-      //   return comment;
-      // }
-      // return { ...comment, replies: [...comment.replies, replyText] };
-    // });
-    const updatedComments = {
-      ...comments,
-      [boxKey]: comments[boxKey].map((comment) => {
-        if (comment.id === replyTo) {
-          return { ...comment, replies: [...comment.replies, replyText] };
-        } else {
-          return comment;
-        }
-      }),
-    };
-    setComments(updatedComments);
-    setReplyText("");
-    setReplyTo(null);
-    // try{
-    //   const response = await axios.post("http://localhost:8088/submitComment", updatedComments);
-    //   const savedComment = response.data;
-    //   setComments(savedComment);
-    //   setReplyText("");
-    //   setReplyTo(null);
-    // } catch(error){
-    //   console.error("Error submitting reply comment:", error);
-    // }
+    if(currentUser.userName==="guest"){
+      alert("Register, plz")
+      return;
+    }
+    try{
+      console.log(comment_id)
+      const reply_detail = newReplyText
+      const userName = currentUser.userName
+      const newReply = {
+        comment_id,
+        reply_detail,
+        userName,
+      };
+      console.log(newReply)
+      const response = await axios.post(`http://35.178.198.96:3000/api/users/writeReply?comment_id=${comment_id}&reply_detail=${reply_detail}&reply_user_name=${userName}`);
+      console.log(response)
+      const responseComment = await axios.post(`http://35.178.198.96:3000/api/users/getReply?comment_id=${comment_id}`);
+      setReplyText(responseComment.data.replies);
+      setShownReplies((prevShownReplies) => ({
+        ...prevShownReplies,
+        [comment_id]: !prevShownReplies[comment_id],
+      }));
+      setReplyTo(null);
+    } catch(error){
+      console.error("Error submitting reply comment:", error);
+    }
   }
 
   return(
     <div className="comment-box" style={{display: "flex", flexDirection:"column"}}>
-          <button onClick={toggleComments}>
+          <Button style={{textTransform: 'none'}} variant="contained" onClick={toggleComments}>
             {showCommentBox ? "Hide Comments" : "Show Comments"}
-          </button>
-          <h4>{title} part{boxKey} Comments:</h4>
-          <ul>
-            {/* 已有评论 */}
-            {CommentData[boxKey-1] && Object.values(CommentData[boxKey-1])[0].map((commentdata) => (
-              <li key={commentdata.id}>
-                <Avatar>{commentdata.avatar}</Avatar>
-                {commentdata.username}: {commentdata.text}
-                <button onClick={() => handleReplyClick(commentdata.id)}>
-                  Reply
-                </button>
-                <ul>
-                  {commentdata.replies.map((reply, index) => (
-                    <li key={index}>{reply}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-            {comments[boxKey] &&
-          comments[boxKey].map((comment) => (
-            <li key={comment.id}>
+          </Button>
+          <h4>{title} Comment room id:{boxKey}</h4>
+          <h4>Comments:</h4>
+            {comments &&
+            comments.map((comment) => (
+            <ul key={comment.comment_id}>
               <Avatar>{comment.avatar}</Avatar>
-                {comment.username}: {comment.text}
-                <button onClick={() => handleReplyClick(comment.id)}>
+                {comment.comment_user_name}: {comment.comment_detail}
+                <Button style={{textTransform: 'none'}} variant="contained" onClick={() => handleReplyClick(comment.comment_id)}>
                   Reply
-                </button>
-                <ul>
-                  {comment.replies.map((reply, index) => (
-                    <li key={index}>{reply}</li>
-                  ))}
-                </ul>
-            </li>
+                </Button>
+                {!shownReplies[comment.comment_id] && <button onClick={() => handleGetReply(comment.comment_id)}>More replies...</button>}
+                {shownReplies[comment.comment_id] && <button onClick={() => handleGetReply(comment.comment_id)}>Fold replies...</button>}
+                {shownReplies[comment.comment_id] && replyText.map((reply) => (
+                  <li key={reply.reply_id}>
+                  <Avatar>{reply.reply_user_name.charAt(0)}</Avatar>
+                    {reply.reply_user_name}: {reply.reply_detail}
+                  </li>
+                ))}
+                {replyTo === comment.comment_id && (
+                      <form onSubmit={(e) => handleReplySubmit(e, comment.comment_id)}>
+                      <textarea
+                    rows="3"
+                    cols="30"
+                    placeholder="Enter your reply..."
+                    value={newReplyText}
+                    onChange={(e) => setNewReplyText(e.target.value)}></textarea>
+                      <Button style={{textTransform: 'none'}} variant="contained" type="submit">
+                        Submit Reply
+                      </Button>
+                      </form>
+                )}
+            </ul>
           ))}
-          </ul>
-          {replyTo && (
-            <form onSubmit={handleReplySubmit}>
-              <textarea
-                rows="2"
-                cols="30"
-                placeholder="Enter your reply..."
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-              ></textarea>
-              <button type="submit" onMouseDown={handleReplySubmit}>
-                Submit Reply
-              </button>
-            </form>
-          )}
           <form onSubmit={handleCommentSubmit}>
             <textarea
               rows="4"
@@ -151,9 +162,9 @@ function Commentbox({boxKey, currentUser, title, newComment, setNewComment,toggl
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
             ></textarea>
-            <button type="submit" onMouseDown={handleCommentSubmit}>
+            <Button style={{textTransform: 'none'}} variant="contained" type="submit">
               Submit
-            </button>
+            </Button>
           </form>
         </div>
   );
@@ -162,7 +173,7 @@ function Commentbox({boxKey, currentUser, title, newComment, setNewComment,toggl
 function TextSelection({currentUser, title, content, summary}) {
   const [showToolBar, setShowToolBar] = useState(false);
   const [selectedText, setSelectedText] = useState("");
-  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [showCommentBox, setShowCommentBox] = useState(false); 
   const [newComment, setNewComment] = useState("");
   const [selectedKey, setSelectedKey] = useState(null);
   const containerRef = useRef();
@@ -204,8 +215,8 @@ function TextSelection({currentUser, title, content, summary}) {
   }
 
   const onCommentClick = () => {
-    setShowToolBar(false);
-    setShowCommentBox(true);
+      setShowToolBar(false);
+      setShowCommentBox(true);
   };
 
   const onCommentHighlight = () => {
@@ -224,14 +235,14 @@ function TextSelection({currentUser, title, content, summary}) {
       {/* 在这里插入要处理的文本内容 */}
       <div style={{display: "flex", flexDirection: "column"}}>
         {summary}
-        {key}
+        {/* {key} */}
         <p>
         {value}
         </p>
       </div>
       {/* 工具栏 */}
       {showToolBar && key === selectedKey &&(
-      <Toolbar onCommentClick={onCommentClick} onCommentHighlight={onCommentHighlight} toolbarRef={toolbarRef}/>
+      <Toolbar onCommentClick={() => onCommentClick(key)} onCommentHighlight={onCommentHighlight} toolbarRef={toolbarRef}/>
       )}
       {/* 展示或关闭评论 */}
       {showCommentBox && (

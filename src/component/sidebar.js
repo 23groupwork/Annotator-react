@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Avatar } from '@mui/material';
 import List from '@mui/material/List';
-import ListItemText from '@mui/material/ListItemText';
+import ListItemText from '@mui/material/ListItemText'; 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AddIcon from '@mui/icons-material/Add';
 import BadgeIcon from '@mui/icons-material/Badge';
@@ -14,7 +14,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ListItemButton from '@mui/material/ListItemButton';
 import Collapse from '@mui/material/Collapse';
 
-function PersonInfo({roleType}){
+function PersonInfo({roleType, showTextArea, setShowTextArea}){
   const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen(!open);
@@ -22,7 +22,10 @@ function PersonInfo({roleType}){
   const handleMessageClick = () => {
     
   };
-  if(roleType==="Student"){
+  const handleReleaseClick = () => {
+    setShowTextArea(!showTextArea);
+  }
+  if(roleType==="student"){
   return(
     <List
     sx={{ width: '100%', maxWidth: 360, bgcolor: 'whitesmoke' }}
@@ -66,7 +69,7 @@ function PersonInfo({roleType}){
             <NotificationsActiveIcon fontSize='small'/>
             <ListItemText primary="Message" style={{textAlign: 'center'}}/>
           </ListItemButton>
-          <ListItemButton sx={{pl:4}}>
+          <ListItemButton sx={{pl:4}} onClick={handleReleaseClick}>
             <AddIcon fontSize='small'/>
             <ListItemText primary="Release" style={{textAlign: 'center'}}/>
           </ListItemButton>
@@ -85,11 +88,12 @@ function PersonInfo({roleType}){
   }
 }
 
-export default function Sidebar({newUser, onCourseClick}){
+export default function Sidebar({newUser, onCourseClick, showTextArea, setShowTextArea}){
   //数据处理
-  const avatar = Object.values(newUser.avatar);
+  const avatar = newUser.avatar;
   const courses = Object.entries(newUser.courses);
-  const userName = Object.values(newUser.userName);
+  console.log(typeof(courses))
+  const userName = newUser.userName;
   const roleType = newUser.roleType;
 
   return(
@@ -99,7 +103,7 @@ export default function Sidebar({newUser, onCourseClick}){
         <Avatar>{avatar}</Avatar>
         </div>
         <p>{userName}</p>
-        <PersonInfo roleType={roleType}/>
+        <PersonInfo roleType={roleType} showTextArea={showTextArea} setShowTextArea={setShowTextArea}/>
         <ul className='course-menu'>
           {courses.map((course)=>
             <li key={course[0]} className='list-item'>

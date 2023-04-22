@@ -7,6 +7,7 @@ import Mainpage from './view/Mainpage.js';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Editor from './view/Editor.js';
 import choiceMajorData from "./data/majordata.js"
+import Contact from "./view/Contact.js";
 
 function App() {
   const majorData = choiceMajorData;
@@ -15,6 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/choosemajor" element={<ChooseMajor majorData={majorData} />}/>

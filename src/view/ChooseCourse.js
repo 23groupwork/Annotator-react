@@ -7,9 +7,9 @@ import { CheckBox } from "../component/checkbox.js";
 import { ChooseCard } from "../component/card.js";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-import { addUser } from "../data/data";
-import  ChoiceData from "../data/coursedata.js"
 import Loading from '../component/Loading.js';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 function Choice(props) {
   return (
@@ -35,9 +35,43 @@ export default function Main() {
   const [selectedCourse, setSelectedCourse] = useState({});
   const [openAlert, setOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const location = useLocation();
+  const [choiceData, setChoiceData] = useState([])
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [major, setMajor] = useState("");
+  const [roleType, setRoleType] = useState("");
+  const Location = useLocation();
   const Navigate = useNavigate();
-  const { id, userName, password, major, roleType } = location.state;
+  
+  useEffect(() => {
+    if(Location.state){
+      setUserName(Location.state.userName);
+      setPassword(Location.state.password);
+      setMajor(Location.state.major);
+      setRoleType(Location.state.roleType);
+    }
+  }, [Location.state])
+
+  console.log({userName, password, major, roleType})
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.post(`http://35.178.198.96:3000/api/users/course?major=${major}`);
+      console.log(response.data.courses);
+      setChoiceData(response.data.courses);
+      console.log(choiceData);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, [major]);
+
+  useEffect(() => {
+    console.log(choiceData);
+  }, [choiceData]);
 
   function handleCheckboxChange(value, checked, name, id) {
     setSelectedCheckbox(prevState => ({
@@ -59,61 +93,99 @@ export default function Main() {
     }
   }  
 
-  function handleStartClick() {
+ async function handleStartClick() {
     if (Object.values(selectedCheckbox).some(checked => checked)) {
       const courses = selectedCourse;
       console.log(courses)
       //更换首字母avatar
       let newUser;
-      if(id==="guest"){
-        newUser = {
-          id,
+      let sendUser;
+      if(userName==="guest"){
+        const avatar = 'G'
+        sendUser = {
           userName,
           password,
           major,
           courses,
-          avatar: 'G',
+          avatar,
           roleType,
         }
       } else {
-        const first = userName.charAt(0);
+        const avatar = userName.charAt(0);
+        const course_name = Object.values(courses);
+        console.log(courses);
         newUser = {
-          id,
           userName,
           password,
           major,
-          courses,
-          avatar: {first},
+          avatar,
           roleType,
+          course_name,
         }
+        sendUser = {
+          userName,
+          major,
+          avatar,
+          roleType,
+          courses,
+        }
+        console.log(newUser)
       }
-      
-      addUser(newUser);
-      setIsLoading(true);
-      setTimeout(()=>{
-        Navigate("/mainpage", {
-          state: {newUser},
-        });
-        setIsLoading(false);
-      }, 2000)
+      // addUser(newUser);
+      // setIsLoading(true);
+      // setTimeout(()=>{
+      //   Navigate("/mainpage", {
+      //     state: sendUser,
+      //   });
+      //   setIsLoading(false);
+      // }, 2000)
       // return true;
+
+      //用户数据发送给后端，存入数据库
+      if(userName!=="guest"){
+        try{
+          const response = await axios.post("http://35.178.198.96:3000/api/users/registerStore", newUser);
+          console.log(response)
+          console.log(newUser);
+          if(response.data.message==="Data has been successfully written"){
+            setIsLoading(true);
+            setTimeout(()=>{
+            Navigate("/mainpage", {
+              state: sendUser
+            });
+            setIsLoading(false);
+            }, 2000)
+          }
+        } catch(error){
+          console.error("Error:", error);
+        }
+      } else {
+        setIsLoading(true);
+        setTimeout(()=>{
+        Navigate("/mainpage", {
+          state: sendUser,
+         });
+         setIsLoading(false);
+       }, 2000)
+      }
     } else {
       setOpenAlert(true);
       return false;
     }
   };
 
-  let choiceData;
-  if(major==="Computer Science"){
-    choiceData = ChoiceData[0];
-  } else if(major==="Economics"){
-    choiceData = ChoiceData[1];
-  } else if(major==="Mathematic"){
-    choiceData = ChoiceData[3];
-  } else if(major==="Law"){
-    choiceData = ChoiceData[2];
-  }
+  // let choiceData;
+  // if(major==="Computer Science"){
+  //   choiceData = ChoiceData[0];
+  // } else if(major==="Economics"){
+  //   choiceData = ChoiceData[1];
+  // } else if(major==="Mathematic"){
+  //   choiceData = ChoiceData[3];
+  // } else if(major==="Law"){
+  //   choiceData = ChoiceData[2];
+  // }
 
+  console.log(choiceData)
   return (
     <div>
       {isLoading && <Loading/>}

@@ -90,9 +90,28 @@ const choiceDataLaw = [
     {title: "lecture3", content: "this is law208 lecture3"},
     {title: "lecture4", content: "this is law208 lecture4"},] },
 ]
-
+const coursesdata= [
+    {
+        "id": 3,
+        "value": "check3",
+        "name": "comp207",
+        "intro": "Database"
+    },
+    {
+        "id": 17,
+        "value": "check5",
+        "name": "comp226",
+        "intro": "Computer-Based Trading in Financial Markets"
+    },
+    {
+        "id": 18,
+        "value": "check6",
+        "name": "comp229",
+        "intro": "Introduction to data science"
+    }
+]
 const choiceData = [  
     choiceDataCS, choiceDataEco, choiceDataLaw, choiceDataMath
 ] 
 
-export default choiceData;
+export default coursesdata;

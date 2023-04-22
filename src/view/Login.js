@@ -14,15 +14,16 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Start from "../component/start.js"
-import { CurrentUser } from "../data/data.js"
+import {CurrentUser} from "../data/data.js"
 import Loading from '../component/Loading.js';
+import axios from 'axios'
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://martinspace.top/">
-        Annatator
+      <Link color="inherit" href="http://annotator.top/contact">
+        Annatotor
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -45,7 +46,7 @@ function SignIn() {
     justifyContent: "space-between",
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const account = data.get('account');
@@ -63,22 +64,47 @@ function SignIn() {
       setPasswordError(false);
     }
     if (account && password) {
-      // console.log({ account, password });
-      const user = CurrentUser.find((user) => user.userName === account && user.password === password);
-      // 处理成功后，跳转到用户对应的主页面
-      if(user){
-        //设置延迟加载动画
-        setIsLoading(true);
-        setTimeout(()=>{
-          Navigate("/Mainpage", {
-            state: {user},
+      //接收后端响应数据
+      try{
+        const response = await axios.post(`http://35.178.198.96:3000/api/users/login?userName=${account}&password=${password}`);
+        //拿到后端数据进行处理
+        console.log(response)
+        if(response.data.message!=="Login successful"){
+          console.error("not successful");
+        } else {
+          const testusers = response.data.users;
+          console.log(testusers[0].user_name);
+          let finaluser = {userName: testusers[0].user_name, major: testusers[0].major, avatar: testusers[0].avatar, roleType: testusers[0].roleType};
+          let courses = {};
+          for (const [index, testuser] of testusers.entries()) {
+          courses[`${index+1}`] = testuser.course_name;
+          }
+          finaluser.courses = courses;
+          console.log(finaluser);
+          // 处理成功后，跳转到用户对应的主页面
+          if(finaluser){
+          //设置延迟加载动画
+          setIsLoading(true);
+          setTimeout(()=>{
+          Navigate("/mainpage", {
+            state: finaluser,
           });
           setIsLoading(false);
         }, 3000)
       } else {
-        setAccountError(!user);
-        setPasswordError(!user);
+        setAccountError(!finaluser);
+        setPasswordError(!finaluser);
         // alert("Invalid username and password");
+      }
+        }
+      }catch (error) {
+        alert("try again", error.response.message);
+        console.error("Error:", error);
+        console.error("Error response:", error.response);
+        console.error("Error status:", error.response.status);
+        console.error("Error data:", error.response.data);
+        console.error("Error message", error.response.message);
+        // 处理请求错误
       }
     }
   };

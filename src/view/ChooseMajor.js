@@ -36,7 +36,8 @@ export default function Main({majorData}){
 
     const Location = useLocation();
     // const { id, userName, password } = Location.state;
-    const { id = "guest", userName = "guest", password = "guest", roleType = "student" } = Location.state || {};
+    
+    const { userName = "guest", password = "guest", roleType = "student" } = Location.state || {};
     const Navigate = useNavigate();
 
     function handleCheckboxChange(event) {
@@ -55,7 +56,7 @@ export default function Main({majorData}){
             setIsLoading(true)
             setTimeout(()=>{
                 Navigate("/choosecourse", {
-                    state: { id, userName, password, major, roleType },
+                    state: { userName, password, major, roleType },
                 });
                 setIsLoading(false);
             }, 2000)

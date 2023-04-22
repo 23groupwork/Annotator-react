@@ -1,0 +1,64 @@
+.contactcard {
+    width: 100%;
+    height: 100%;
+    background: #07182E;
+    position: relative;
+    display: flex;
+    place-content: center;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .contactcard h1 {
+    z-index: 1;
+    color: white;
+    font-size: 2em;
+  }
+  .contactcard h2 {
+    z-index: 1;
+    color: white;
+    font-size: 2em;
+  }
+  .contactcard h4 {
+    z-index: 1;
+    color: white;
+    font-size: 2em;
+  }
+  
+  .contactcard::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    height: 400%;
+    animation: rotBGimg 3s linear infinite;
+    transition: all 0.2s linear;
+  }
+  
+  @keyframes rotBGimg {
+    from {
+      transform: rotate(0deg);
+    }
+  
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .contactcard::after {
+    content: '';
+    position: absolute;
+    background: #07182E;
+    ;
+    inset: 5px;
+    border-radius: 15px;
+  }  
+  /* .card:hover:before {
+    background-image: linear-gradient(180deg, rgb(81, 255, 0), purple);
+    animation: rotBGimg 3.5s linear infinite;
+  } */
+  
+  

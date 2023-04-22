@@ -2,34 +2,42 @@ import "../layouts/Mainpage.css"
 import Sidebar from "../component/sidebar";
 import Navbar from "../component/navbar";
 import TextSelection from "../component/TextSelection";
-import ChoiceData from "../data/coursedata";
+import ReleaseText from "../component/TutorRelease";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
+import { useEffect } from "react";
+import axios from 'axios';
 
-function findLectures(major, selectedCourse) {
-    let courses;
-    if (major === "Computer Science") courses = Object.values(ChoiceData)[0];
-    if (major === "Economics") courses = Object.values(ChoiceData)[1];
-    if (major === "Law") courses = Object.values(ChoiceData)[2];
-    if (major === "Mathematic") courses = Object.values(ChoiceData)[3];
-  
-    let foundLectures = [];
-    courses.forEach(({ name, lecture }) => {
-      if (selectedCourse === name) {
-        foundLectures = lecture;
-      }
-    });
-  
-    return foundLectures;
-  }
-
-function LecturesList({currentUser, selectedCourse, major}){
+function LecturesList({currentUser, selectedCourse, showTextArea, setShowTextArea}){
     const [selectedLecture, setSelectedLecture] = useState(null);
-    const lectures = findLectures(major, selectedCourse);
-    const onLectureClick = (e, lecture) => {
+    const [lectures, setLectures] = useState([]);
+    const [content, setContent] = useState([]);
+    //用后端响应来找lectures
+    useEffect(() => {
+        const fetchLectures = async () => {
+          try {
+            const response = await axios.post(
+              `http://35.178.198.96:3000/api/users/lecture?course_name=${selectedCourse}`
+            );
+            setLectures(response.data.lectures);
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        };
+        fetchLectures();
+      }, [selectedCourse]);
+
+    const onLectureClick = async (e, lecture) => {
         e.preventDefault();
+        setShowTextArea(false);
         setSelectedLecture(lecture);
-      };
+        const response = await axios.post(`http://35.178.198.96:3000/api/users/content?lecture_id=${lecture.id}`)
+        const contentresult = response.data.contents.reduce((acc, item) => {
+            acc[item.id] = item.content_detail;
+            return acc;
+          }, {});
+        setContent(contentresult);
+    };
     const titleStyle = {
         width: "100%",
         height: "4rem",
@@ -51,7 +59,7 @@ function LecturesList({currentUser, selectedCourse, major}){
         <ul>
             {lectures.map((lecture, index)=>
             <li key={index} style={{listStyle:'none', backgroundColor: 'whitesmoke', margin: '1em', height: '3em'}}>
-                <button className="lecture-link" onClick={(e) => onLectureClick(e, lecture)}> 
+                <button className="lecture-link" onClick={(e) => onLectureClick(e, lecture, showTextArea, setShowTextArea)}> 
                 {lecture.title}
                 </button>
                 {lecture.summary}
@@ -60,7 +68,7 @@ function LecturesList({currentUser, selectedCourse, major}){
         </ul>
         {selectedLecture && (
         <div>
-          <TextSelection currentUser={currentUser} title={selectedLecture.title} content={selectedLecture.content} summary={selectedLecture.summary}/>
+          <TextSelection currentUser={currentUser} title={selectedLecture.title} content={content} summary={selectedLecture.summary}/>
         </div>)}
         </div>
     );
@@ -83,22 +91,29 @@ function Mainpage(){
     }
 
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [showTextArea, setShowTextArea] = useState(false);
+    // const [newUser, setNewUser] = useState({});
 
     const location = useLocation();
     const newUser = location.state;
-    const currentuser=Object.values(newUser);
-    // const id = Object.values(currentuser)[0];
-    const name = currentuser[0].userName;
-    const major = currentuser[0].major;
-    
+    // console.log(newUser);
+    const name = newUser.userName;
+    const major = newUser.major;
+    const courses = newUser.course_name;
+
     return(
         <div style={container}>
         <Navbar isLoggedIn="true" name={name}/>
         <div style={sideTitle}>
-            <Sidebar newUser={currentuser[0]} onCourseClick={setSelectedCourse}/>
+            <Sidebar newUser={newUser} onCourseClick={setSelectedCourse} showTextArea={showTextArea} setShowTextArea={setShowTextArea}/>
+            <div style={titleContent}>
+                {!showTextArea && <LecturesList currentUser={newUser} selectedCourse={selectedCourse} major={major} showTextArea={showTextArea} setShowTextArea={setShowTextArea}/>}
+                {showTextArea && (<ReleaseText courses={courses} onCourseClick={setSelectedCourse}/>)}
+            </div>
+            {/* {!showTextArea &&
             <div style={titleContent}>
                 <LecturesList currentUser={currentuser[0]} selectedCourse={selectedCourse} major={major}/>
-            </div>
+            </div>} */}
         </div>
         </div>
     );

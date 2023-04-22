@@ -15,10 +15,10 @@ function Navigation({isLoggedIn=false, name}){
       <AppBar position="static">
       <Toolbar>  
         <Typography variant="h6" style={{ flexGrow: 1 }}>
-          <a href="/" style={titleStyle}>Annatator</a>
+          <a href="/" style={titleStyle}>Annotator</a>
         </Typography>
         <Button  style={{ textTransform: 'none', fontSize: 'large' }} component={Link} to="/" color="inherit">Home</Button>
-        <Button  style={{ textTransform: 'none', fontSize: 'large' }} color="inherit">Contact Us</Button>
+        <Button  style={{ textTransform: 'none', fontSize: 'large' }} component={Link} to="/contact" color="inherit">Contact Us</Button>
         <SignUp isLoggedIn={isLoggedIn} isGuest={isGuest}/>
         {/* <Button  style={{ textTransform: 'none', fontSize: 'large' }} component={Link} to="/register" variant="inherit">Sign Up</Button> */}
         {/* <Button  style={{ textTransform: 'none', fontSize: 'large' }} component={Link} to="/editor" variant="inherit">+ Release</Button> */}

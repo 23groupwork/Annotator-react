@@ -19,13 +19,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Loading from '../component/Loading.js';
+import axios from 'axios'
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://martinspace.top/">
-        Annatator
+      <Link color="inherit" href="http://annotator.top/contact">
+        Annotator
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -55,14 +56,14 @@ function SignUp() {
     justifyContent: "space-between",
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const firstname = data.get('firstName');
     const lastname = data.get('lastName');
     const account = data.get('account');
     const password = data.get('password');
-    //先将基本信息压进数据库，再进行专业和课程选择
+    //判断是否有空值
     if(!firstname){
       setFNameError(true);
     } else {
@@ -96,16 +97,39 @@ function SignUp() {
     if (firstname && lastname && account && password && selectedRole) {
       console.log({ firstname, lastname, account, password, selectedRole });
       // 处理成功后，跳转到选择专业页面
-      const roleType = selectedRole;
-      const userName = account;
-      //延迟加载
-      setIsLoading(true);
-      setTimeout(()=>{
-        Navigate("/choosemajor", {
-          state: {id: 5, userName, password, roleType},
-        });
-        setIsLoading(false);
-      }, 3000)
+      // const roleType = selectedRole;
+      // const userName = account;
+      // //延迟加载
+      // setIsLoading(true);
+      // setTimeout(()=>{ 
+      //   Navigate("/choosemajor", {
+      //     state: {id: Date.now(), userName, password, roleType},
+      //   });
+      //   setIsLoading(false);
+      // }, 3000)
+
+      // //交给后端验证用户输入
+      try{
+        const response = await axios.post(`http://35.178.198.96:3000/api/users/registerCheck?userName=${account}&password=${password}`);
+        //后端响应成功，跳转页面
+        if(response.data.message==="Registration successful"){
+          // 处理成功后，跳转到选择专业页面
+          const roleType = selectedRole;
+          const userName = account;
+          //延迟加载
+          setIsLoading(true);
+          setTimeout(()=>{ 
+          Navigate("/choosemajor", {
+            state: {userName, password, roleType},
+          });
+          setIsLoading(false);
+          }, 3000)
+        }
+      } catch(error){
+        console.error("Error:", error);
+        alert(error.response.data.error)
+        console.error("Error:", error.response);
+      }
     }
   };
 
@@ -187,7 +211,7 @@ function SignUp() {
                 value={selectedRole}
                 onChange={(event) => setSelectedRole(event.target.value)}>
                 <FormControlLabel value="tutor" control={<Radio />} label="Tutor" />
-                <FormControlLabel value="Student" control={<Radio />} label="Student" />
+                <FormControlLabel value="student" control={<Radio />} label="Student" />
               </RadioGroup>
               {typeError && (
             <Typography variant="caption" color="error">

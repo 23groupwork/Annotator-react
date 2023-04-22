@@ -6,7 +6,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"}, 
         avatar: 'C',
-        roleType: 'student',
+        roleType: 'Student',
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'Z',
-        roleType: "student",
+        roleType: "Student",
     },
     {
         id: 3,
@@ -24,7 +24,7 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'R',
-        roleType: 'student',
+        roleType: 'Student',
     },
     {
         id: 4,
@@ -33,13 +33,31 @@ export const CurrentUser = [
         major: 'Computer Science',
         courses: {1:"comp201", 2:"comp202", 3:"comp207"},
         avatar: 'X',
-        roleType: 'student',
+        roleType: 'Student',
+    },
+    {
+        id: 5,
+        userName: 'admin-s',
+        password: '123456',
+        major: 'Computer Science',
+        courses: {1:"comp201", 2:"comp202", 3:"comp207", 4:"comp208"},
+        avatar: 'a',
+        roleType: 'Student',
+    },
+    {
+            id: 6,
+            userName: 'admin-t',
+            password: '123456',
+            major: 'Computer Science',
+            courses: {1:"comp201", 2:"comp202"},
+            avatar: 'a',
+            roleType: 'Tutor',
     }
 ];
 
 export function addUser(newUser) {
     CurrentUser.push(newUser);
-    console.log(CurrentUser);
+    // console.log(CurrentUser);
 }
 
 export default CurrentUser;
